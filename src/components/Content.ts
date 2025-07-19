@@ -60,8 +60,6 @@ export class Content {
                     const end = textarea.selectionEnd;
                     const value = textarea.value;
                     let newText = "";
-                    let selStart = start;
-                    let selEnd = end;
                     // 判断是否多行选择
                     if (start !== end && value.slice(start, end).includes("\n")) {
                         // 多行缩进或反缩进
@@ -77,17 +75,14 @@ export class Content {
                             }
                         }
                         newText = lines.join("\n");
-                        selEnd = start + newText.length;
                     } else {
                         // 单行缩进或反缩进
                         if (e.shiftKey) {
                             let lineStart = value.lastIndexOf("\n", start - 1) + 1;
                             if (value.startsWith("  ", lineStart)) {
                                 newText = value.slice(lineStart, start).replace(/^  /, "");
-                                selStart = selEnd = start - 2;
                             } else if (value.startsWith("\t", lineStart)) {
                                 newText = value.slice(lineStart, start).replace(/^\t/, "");
-                                selStart = selEnd = start - 1;
                             } else {
                                 newText = value.slice(lineStart, start);
                             }

@@ -1,6 +1,7 @@
 import { Sidebar } from "./components/Sidebar";
 import { Content } from "./components/Content";
 import { docData } from "./data/docData";
+import { MobileManager } from "./components/MobileManager";
 import Swal from "sweetalert2";
 
 declare global {
@@ -12,6 +13,7 @@ declare global {
 document.addEventListener("DOMContentLoaded", async () => {
     const sidebar = new Sidebar("app");
     const content = new Content("app");
+    const mobileManager = new MobileManager();
     window.isNotes = false;
     let initialMenus = "";
 
@@ -309,5 +311,90 @@ document.addEventListener("DOMContentLoaded", async () => {
             docData.saveNotesToJson();
         }
                  
+    });
+
+    // 移动端事件监听
+    document.addEventListener('addNote', async () => {
+        const { value: title } = await Swal.fire({
+            title: "Enter menu title",
+            input: "text",
+            inputPlaceholder: "Menu title",
+            showCancelButton: true,
+            inputValidator: (v) => (v ? null : "Please enter a title"),
+        });
+        if (title) {
+            const newItem = docData.addMenuItem(title);
+            sidebar.renderNav(docData.getMenus());
+            content.renderContent(newItem.path);
+            currentSelectedPath = newItem.path;
+            const newLi = sidebar.getNavList().querySelector(`[data-id="${newItem.id}"]`);
+            if (newLi) {
+                newLi.classList.add("new-item");
+                setTimeout(() => newLi.classList.remove("new-item"), 2000);
+            }
+            localStorage.setItem("menus", JSON.stringify(docData.getMenus()));
+            // 移动端添加笔记后关闭侧边栏
+            mobileManager.closeSidebar();
+        }
+    });
+
+    document.addEventListener('editMenuItem', ((e: Event) => {
+        const customEvent = e as CustomEvent;
+        const { id, title } = customEvent.detail;
+        docData.editMenuItem(id, title);
+        sidebar.renderNav(docData.getMenus());
+        if (currentSelectedPath) {
+            content.renderContent(currentSelectedPath);
+        }
+        localStorage.setItem("menus", JSON.stringify(docData.getMenus()));
+    }) as EventListener);
+
+    document.addEventListener('deleteMenuItem', ((e: Event) => {
+        const customEvent = e as CustomEvent;
+        const { id } = customEvent.detail;
+        docData.deleteMenuItem(id);
+        sidebar.renderNav(docData.getMenus());
+        if (docData.getMenus().length > 0) {
+            content.renderContent(docData.getMenus()[0].path);
+            currentSelectedPath = docData.getMenus()[0].path;
+        } else {
+            content.renderContent("");
+            currentSelectedPath = null;
+        }
+        localStorage.setItem("menus", JSON.stringify(docData.getMenus()));
+    }) as EventListener);
+
+    document.addEventListener('addChildMenuItem', ((e: Event) => {
+        const customEvent = e as CustomEvent;
+        const { parentId, title } = customEvent.detail;
+        const newItem = docData.addMenuItem(title, parentId);
+        sidebar.renderNav(docData.getMenus());
+        content.renderContent(newItem.path);
+        currentSelectedPath = newItem.path;
+        const newLi = sidebar.getNavList().querySelector(`[data-id="${newItem.id}"]`);
+        if (newLi) {
+            newLi.classList.add("new-item");
+            setTimeout(() => newLi.classList.remove("new-item"), 2000);
+        }
+        localStorage.setItem("menus", JSON.stringify(docData.getMenus()));
+        // 移动端添加子菜单后关闭侧边栏
+        mobileManager.closeSidebar();
+    }) as EventListener);
+
+    // 窗口大小变化处理
+    window.addEventListener('resize', () => {
+        mobileManager.handleResize();
+    });
+
+    // 移动端导航点击后关闭侧边栏
+    sidebar.getNavList().addEventListener("click", (e: Event) => {
+        const target = e.target as HTMLElement;
+        const path = target.dataset.path;
+        if (path && window.innerWidth <= 768) {
+            // 移动端点击菜单项后关闭侧边栏
+            setTimeout(() => {
+                mobileManager.closeSidebar();
+            }, 100);
+        }
     });
 });
