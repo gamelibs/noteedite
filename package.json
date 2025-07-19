@@ -1,23 +1,16 @@
 {
-  "name": "ovograph",
-  "private": true,
-  "version": "0.0.0",
+  "name": "ovograph-deploy",
+  "version": "1.0.0",
+  "description": "OVOGraph Notes - Production Deployment",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview",
     "start": "node server.js"
-  },
-  "devDependencies": {
-    "@vitejs/plugin-vue": "^6.0.0",
-    "typescript": "~5.8.3",
-    "vite": "^7.0.4"
   },
   "dependencies": {
     "cors": "^2.8.5",
-    "express": "^5.1.0",
-    "marked": "^16.0.0",
-    "sweetalert2": "^11.22.2"
+    "express": "^5.1.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
