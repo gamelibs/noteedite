@@ -61,7 +61,7 @@ export class DocData {
     }
     // 异步拉取远程数据，合并并刷新
     try {
-      const response = await fetch("http://localhost:19200/get-notes");
+      const response = await fetch("http://localhost:19200/api/get-notes");
       if (response.ok) {
         const data = await response.json();
         const remoteMenus = data.menus || [];
@@ -94,7 +94,7 @@ export class DocData {
     const jsonData = JSON.stringify(notes, null, 2);
 
     try {
-      const response = await fetch("http://localhost:19200/save-notes", {
+      const response = await fetch("http://localhost:19200/api/save-notes", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: jsonData,

@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "cors": "^2.8.5",
-    "express": "^5.1.0",
+    "express": "^4.21.2",
     "marked": "^16.0.0",
     "sweetalert2": "^11.22.2"
   }
