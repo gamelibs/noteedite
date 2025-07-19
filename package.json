@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "start": "node server.js"
+    "start": "node note-server.js"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.0",
